@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       const demoUser = {
         id: 'user-demo-1',
         name: 'Alex Morgan',
-        email: 'alex.morgan@example.com',
+        email: 'prajwal@gmail.com',
         role: 'SOFTWARE_ENGINEER',
       };
       if (!storedUser && !storedToken) {

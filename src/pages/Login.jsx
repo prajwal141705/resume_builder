@@ -5,8 +5,8 @@ import useAuth from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const Login = () => {
-  const [email, setEmail] = useState('alex.morgan@example.com');
-  const [password, setPassword] = useState('Password123!');
+  const [email, setEmail] = useState('prajwal@gmail.com');
+  const [password, setPassword] = useState('prajwal1706');
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();

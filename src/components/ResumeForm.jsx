@@ -79,6 +79,8 @@ export const ResumeForm = ({ resumeData, onChange }) => {
           <PersonalInfoForm
             personalInfo={resumeData?.personalInfo}
             summary={resumeData?.summary}
+            skills={resumeData?.skills}
+            title={resumeData?.title}
             onChange={(val) => handleFieldUpdate('personalInfo', val)}
             onSummaryChange={(val) => handleFieldUpdate('summary', val)}
           />

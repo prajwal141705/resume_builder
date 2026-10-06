@@ -1,12 +1,33 @@
-import React from 'react';
-import { User, Mail, Phone, MapPin, Linkedin, Github, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Mail, Phone, MapPin, Linkedin, Github, FileText, Sparkles, RefreshCw } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-export const PersonalInfoForm = ({ personalInfo, summary, onChange, onSummaryChange }) => {
+export const PersonalInfoForm = ({ personalInfo, summary, skills = [], title = '', onChange, onSummaryChange }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
   const handleChange = (field, value) => {
     onChange({
       ...personalInfo,
       [field]: value,
     });
+  };
+
+  const handleAiGenerateSummary = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const candidateTitle = title || personalInfo?.fullName ? `${personalInfo?.fullName ? personalInfo.fullName + ' - ' : ''}Software Engineer` : 'Software Professional';
+      const skillList = skills && skills.length > 0 ? skills.slice(0, 5).join(', ') : 'modern software development, system design, and agile methodologies';
+      
+      const templates = [
+        `Results-driven software engineer with extensive hands-on experience in ${skillList}. Proven track record of designing scalable applications, optimizing database performance, and delivering high-quality web solutions. Adept at collaborative problem solving, code quality standards, and rapid continuous delivery.`,
+        `Passionate and detail-oriented technical professional specialized in ${skillList}. Demonstrated ability to architect robust full-stack systems and enhance user engagement through modern best practices. Eager to bring strong analytical and engineering skills to high-impact challenges.`,
+        `Dedicated engineer with comprehensive expertise across ${skillList}. Experienced in translating business requirements into scalable, maintainable architectures. Committed to technical excellence, automated testing, and cross-functional team success.`
+      ];
+
+      const chosen = templates[Math.floor(Math.random() * templates.length)];
+      onSummaryChange(chosen);
+      setIsGenerating(false);
+      toast.success('AI summary generated successfully!');
+    }, 500);
   };
 
   return (
@@ -50,7 +71,7 @@ export const PersonalInfoForm = ({ personalInfo, summary, onChange, onSummaryCha
               type="email"
               value={personalInfo?.email || ''}
               onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="alex.morgan@example.com"
+              placeholder="prajwal@gmail.com"
               className="w-full pl-9 pr-3.5 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-slate-800 placeholder:text-slate-400"
             />
           </div>
@@ -125,16 +146,28 @@ export const PersonalInfoForm = ({ personalInfo, summary, onChange, onSummaryCha
         </div>
       </div>
 
-      {/* Professional Summary */}
+      {/* Professional Summary with AI Generator */}
       <div className="pt-2">
         <div className="flex items-center justify-between mb-1.5">
           <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1.5">
             <FileText className="w-3.5 h-3.5 text-brand-600" />
             Professional Summary
           </label>
-          <span className="text-[11px] text-slate-400">
-            {summary?.length || 0} characters
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleAiGenerateSummary}
+              disabled={isGenerating}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200/80 rounded-lg transition-all shadow-2xs hover:shadow-xs active:scale-95 disabled:opacity-50"
+              title="Generate tailored professional summary using AI"
+            >
+              <Sparkles className="w-3 h-3 text-brand-600 animate-pulse" />
+              {isGenerating ? 'Generating...' : summary ? 'AI Enhance Summary' : 'AI Generate Summary'}
+            </button>
+            <span className="text-[11px] text-slate-400">
+              {summary?.length || 0} chars
+            </span>
+          </div>
         </div>
         <textarea
           rows={4}

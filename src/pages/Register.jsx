@@ -126,7 +126,7 @@ export const Register = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="alex.morgan@example.com"
+                    placeholder="prajwal@gmail.com"
                     className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white text-slate-900 transition-all placeholder:text-slate-400"
                   />
                 </div>

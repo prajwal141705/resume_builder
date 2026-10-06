@@ -7,7 +7,7 @@ export const Profile = () => {
   const { user, updateUser, token } = useAuth();
 
   const [name, setName] = useState(user?.name || 'Alex Morgan');
-  const [email, setEmail] = useState(user?.email || 'alex.morgan@example.com');
+  const [email, setEmail] = useState(user?.email || 'prajwal@gmail.com');
   const [headline, setHeadline] = useState('Senior Full Stack Software Engineer');
   const [bio, setBio] = useState(
     'Passionate about distributed backend systems in Java/Spring Boot and responsive, accessible UI in React.'

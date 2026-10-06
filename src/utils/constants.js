@@ -39,9 +39,9 @@ export const INITIAL_RESUME_STATE = {
   title: 'My Professional Resume',
   template: RESUME_TEMPLATES.MODERN,
   personalInfo: {
-    fullName: 'Alex Morgan',
-    email: 'alex.morgan@example.com',
-    phone: '+1 (555) 019-2834',
+    fullName: 'prajwal surve',
+    email: 'prajwal@gmail.com',
+    phone: '+91 9900887767',
     location: 'San Francisco, CA',
     linkedin: 'linkedin.com/in/alexmorgan',
     github: 'github.com/alexmorgan',
