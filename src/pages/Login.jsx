@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, LogIn, Bot, ArrowRight, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, LogIn, Bot, Loader2, CheckCircle2 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 export const Login = () => {
-  const [email, setEmail] = useState('prajwal@gmail.com');
-  const [password, setPassword] = useState('prajwal1706');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,9 +22,16 @@ export const Login = () => {
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      const res = await login(email, password);
       toast.success('Welcome back!');
-      navigate(from, { replace: true });
+      
+      const isAdm = Boolean(
+        res?.user?.roles?.includes('ROLE_ADMIN') ||
+        res?.user?.email?.toLowerCase() === 'prajwal@gmail.com'
+      );
+      
+      const destination = location.state?.from?.pathname || (isAdm ? '/admin/dashboard' : '/dashboard');
+      navigate(destination, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
       toast.error(err.message || 'Login failed. Please check credentials.');
@@ -86,7 +91,7 @@ export const Login = () => {
                 Sign in to your account
               </h3>
               <p className="text-sm text-slate-500 mt-1">
-                Enter your credentials to access your resume workspace.
+                Enter your credentials to access your resume workspace or admin console.
               </p>
             </div>
 
@@ -102,7 +107,7 @@ export const Login = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com"
+                    placeholder="name@example.com"
                     className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white text-slate-900 transition-all placeholder:text-slate-400"
                   />
                 </div>

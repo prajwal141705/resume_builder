@@ -2,19 +2,25 @@ import React, { useState } from 'react';
 import PersonalInfoForm from './PersonalInfoForm';
 import EducationForm from './EducationForm';
 import ExperienceForm from './ExperienceForm';
+import InternshipsForm from './InternshipsForm';
 import ProjectForm from './ProjectForm';
 import SkillsForm from './SkillsForm';
-import { User, GraduationCap, Briefcase, FolderGit2, Wrench, FileEdit } from 'lucide-react';
+import CertificationsForm from './CertificationsForm';
+import AchievementsLanguagesHobbiesForm from './AchievementsLanguagesHobbiesForm';
+import { User, GraduationCap, Briefcase, FolderGit2, Wrench, FileEdit, Building, Award, Sparkles } from 'lucide-react';
 
 export const ResumeForm = ({ resumeData, onChange }) => {
   const [activeTab, setActiveTab] = useState('personal');
 
   const tabs = [
-    { id: 'personal', label: 'Personal & Summary', icon: User },
+    { id: 'personal', label: 'Personal Info', icon: User },
     { id: 'experience', label: 'Experience', icon: Briefcase, count: resumeData?.experience?.length || 0 },
+    { id: 'internships', label: 'Internships', icon: Building, count: resumeData?.internships?.length || 0 },
     { id: 'education', label: 'Education', icon: GraduationCap, count: resumeData?.education?.length || 0 },
     { id: 'projects', label: 'Projects', icon: FolderGit2, count: resumeData?.projects?.length || 0 },
     { id: 'skills', label: 'Skills', icon: Wrench, count: resumeData?.skills?.length || 0 },
+    { id: 'certifications', label: 'Certificates', icon: Award, count: resumeData?.certifications?.length || 0 },
+    { id: 'extras', label: 'Extras', icon: Sparkles },
   ];
 
   const handleFieldUpdate = (field, value) => {
@@ -51,7 +57,7 @@ export const ResumeForm = ({ resumeData, onChange }) => {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
                 isActive
                   ? 'bg-brand-600 text-white shadow-sm shadow-brand-500/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50'
@@ -93,6 +99,13 @@ export const ResumeForm = ({ resumeData, onChange }) => {
           />
         )}
 
+        {activeTab === 'internships' && (
+          <InternshipsForm
+            internships={resumeData?.internships}
+            onChange={(val) => handleFieldUpdate('internships', val)}
+          />
+        )}
+
         {activeTab === 'education' && (
           <EducationForm
             education={resumeData?.education}
@@ -111,6 +124,26 @@ export const ResumeForm = ({ resumeData, onChange }) => {
           <SkillsForm
             skills={resumeData?.skills}
             onChange={(val) => handleFieldUpdate('skills', val)}
+          />
+        )}
+
+        {activeTab === 'certifications' && (
+          <CertificationsForm
+            certifications={resumeData?.certifications}
+            onChange={(val) => handleFieldUpdate('certifications', val)}
+          />
+        )}
+
+        {activeTab === 'extras' && (
+          <AchievementsLanguagesHobbiesForm
+            careerObjective={resumeData?.careerObjective}
+            achievements={resumeData?.achievements}
+            languages={resumeData?.languages}
+            hobbies={resumeData?.hobbies}
+            onObjectiveChange={(val) => handleFieldUpdate('careerObjective', val)}
+            onAchievementsChange={(val) => handleFieldUpdate('achievements', val)}
+            onLanguagesChange={(val) => handleFieldUpdate('languages', val)}
+            onHobbiesChange={(val) => handleFieldUpdate('hobbies', val)}
           />
         )}
       </div>

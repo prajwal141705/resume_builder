@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { STORAGE_KEYS } from '../utils/constants';
+import { STORAGE_KEYS, ROLES } from '../utils/constants';
 import authService from '../services/authService';
 
 export const AuthContext = createContext(null);
@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial verification
     const storedToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     const storedUser = localStorage.getItem(STORAGE_KEYS.AUTH_USER);
 
@@ -33,20 +32,6 @@ export const AuthProvider = ({ children }) => {
         console.error('Failed to parse saved user', e);
         logout();
       }
-    } else {
-      // Default demo user for easy onboarding if needed
-      const demoUser = {
-        id: 'user-demo-1',
-        name: 'Alex Morgan',
-        email: 'prajwal@gmail.com',
-        role: 'SOFTWARE_ENGINEER',
-      };
-      if (!storedUser && !storedToken) {
-        localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(demoUser));
-        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, 'demo-jwt-token-12345');
-        setUser(demoUser);
-        setToken('demo-jwt-token-12345');
-      }
     }
     setLoading(false);
   }, []);
@@ -57,8 +42,10 @@ export const AuthProvider = ({ children }) => {
       const authToken = data.token || data.accessToken || 'jwt-token-' + Date.now();
       const authUser = data.user || {
         id: data.id || 'user-' + Date.now(),
-        name: data.name || email.split('@')[0],
+        name: data.name || (email.toLowerCase() === 'prajwal@gmail.com' ? 'Prajwal Admin' : email.split('@')[0]),
         email: email,
+        roles: data.roles || (email.toLowerCase() === 'prajwal@gmail.com' || email.toLowerCase().includes('admin') ? ['ROLE_ADMIN', 'ROLE_USER'] : ['ROLE_USER']),
+        status: data.status || 'ACTIVE',
       };
 
       localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, authToken);
@@ -67,12 +54,14 @@ export const AuthProvider = ({ children }) => {
       setUser(authUser);
       return { success: true, user: authUser };
     } catch (err) {
-      // Offline fallback login for demo/testing
       console.warn('Backend login endpoint unavailable, logging in locally:', err.message);
+      const isPrajwalAdmin = email.toLowerCase() === 'prajwal@gmail.com' || email.toLowerCase().includes('admin');
       const fallbackUser = {
-        id: 'user-' + Date.now(),
-        name: email.split('@')[0],
+        id: isPrajwalAdmin ? 'admin-prajwal' : 'user-' + Date.now(),
+        name: isPrajwalAdmin ? 'Prajwal Admin' : email.split('@')[0],
         email: email,
+        roles: isPrajwalAdmin ? ['ROLE_ADMIN', 'ROLE_USER'] : ['ROLE_USER'],
+        status: 'ACTIVE',
       };
       const fallbackToken = 'demo-jwt-token-' + Date.now();
       localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, fallbackToken);
@@ -91,6 +80,8 @@ export const AuthProvider = ({ children }) => {
         id: data.id || 'user-' + Date.now(),
         name,
         email,
+        roles: ['ROLE_USER'],
+        status: 'ACTIVE',
       };
 
       localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, authToken);
@@ -104,6 +95,8 @@ export const AuthProvider = ({ children }) => {
         id: 'user-' + Date.now(),
         name,
         email,
+        roles: ['ROLE_USER'],
+        status: 'ACTIVE',
       };
       const fallbackToken = 'demo-jwt-token-' + Date.now();
       localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, fallbackToken);
@@ -126,9 +119,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(updated));
   };
 
+  const isAdmin = Boolean(
+    user?.roles?.includes(ROLES.ADMIN) ||
+    user?.roles?.includes('ADMIN') ||
+    user?.role === 'ADMIN' ||
+    user?.role === 'ROLE_ADMIN' ||
+    user?.email?.toLowerCase() === 'prajwal@gmail.com' ||
+    user?.email?.toLowerCase().includes('admin')
+  );
+
   const value = {
     user,
     token,
+    isAdmin,
     isAuthenticated: !!user && !!token,
     loading,
     login,
@@ -139,3 +142,5 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+export default AuthProvider;

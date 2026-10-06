@@ -107,6 +107,33 @@ export const resumeService = {
   },
 
   /**
+   * Duplicate a resume by ID
+   */
+  async duplicateResume(id) {
+    try {
+      const response = await api.post(`/resumes/${id}/duplicate`);
+      return response.data;
+    } catch (err) {
+      console.warn(`Backend unavailable, duplicating local resume ${id}:`, err.message);
+      const localList = getLocalResumes();
+      const original = localList.find((r) => r.id === id || r._id === id);
+      if (original) {
+        const duplicated = {
+          ...original,
+          id: `res-${Date.now()}`,
+          title: `${original.title} (Copy)`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        localList.unshift(duplicated);
+        saveLocalResumes(localList);
+        return duplicated;
+      }
+      throw new Error('Resume not found to duplicate');
+    }
+  },
+
+  /**
    * Delete a resume by ID
    */
   async deleteResume(id) {
