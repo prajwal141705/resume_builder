@@ -197,6 +197,25 @@ const ClassicTraditionalTemplate = ({ resumeData }) => {
         </section>
       )}
 
+      {projects && projects.length > 0 && (
+        <section className="mb-4">
+          <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-2 font-sans">
+            Key Projects
+          </h2>
+          <div className="space-y-2.5">
+            {projects.map((proj, idx) => (
+              <div key={idx} className="text-xs font-sans">
+                <div className="flex justify-between font-bold">
+                  <span>{proj.title} {proj.technologies && <span className="text-slate-600 font-normal">({proj.technologies})</span>}</span>
+                  {proj.link && <span className="text-slate-600 font-normal">{proj.link}</span>}
+                </div>
+                {proj.description && <p className="text-slate-800 text-xs mt-0.5 leading-relaxed">{proj.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {education && education.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-2 font-sans">
@@ -270,6 +289,23 @@ const ProfessionalCorporateTemplate = ({ resumeData }) => {
         </section>
       )}
 
+      {projects && projects.length > 0 && (
+        <section className="mb-5">
+          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2.5">Projects & Portfolio</h2>
+          <div className="space-y-3">
+            {projects.map((proj, i) => (
+              <div key={i} className="border-l-2 border-teal-700 pl-3">
+                <div className="flex justify-between text-xs font-bold text-slate-900">
+                  <span>{proj.title} {proj.technologies && <span className="text-teal-700 font-medium text-[11px]">| {proj.technologies}</span>}</span>
+                  {proj.link && <span className="text-teal-700 text-[11px] font-normal">{proj.link}</span>}
+                </div>
+                {proj.description && <div className="text-slate-700 text-xs mt-1 leading-normal">{proj.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {education && education.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2">Education</h2>
@@ -328,6 +364,23 @@ const MinimalCleanTemplate = ({ resumeData }) => {
                   <span className="text-slate-400 font-normal">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
                 {exp.description && <div className="text-xs text-slate-600 whitespace-pre-line mt-1">{exp.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {projects && projects.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Projects</h2>
+          <div className="space-y-3">
+            {projects.map((proj, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs font-semibold text-slate-900">
+                  <span>{proj.title} {proj.technologies && <span className="text-slate-400 font-mono text-[11px]">({proj.technologies})</span>}</span>
+                  {proj.link && <span className="text-slate-400 font-normal">{proj.link}</span>}
+                </div>
+                {proj.description && <div className="text-xs text-slate-600 mt-1">{proj.description}</div>}
               </div>
             ))}
           </div>
@@ -398,6 +451,23 @@ const CreativePortfolioTemplate = ({ resumeData }) => {
                   <span className="text-slate-500 font-normal">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
                 {exp.description && <div className="text-slate-700 text-xs whitespace-pre-line mt-1">{exp.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {projects && projects.length > 0 && (
+        <section className="mb-5">
+          <h2 className="text-xs font-bold uppercase text-purple-800 tracking-wider mb-3">Featured Projects</h2>
+          <div className="space-y-3">
+            {projects.map((proj, i) => (
+              <div key={i} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="flex justify-between text-xs font-bold text-purple-900">
+                  <span>{proj.title} {proj.technologies && <span className="text-purple-600 font-medium text-[11px]">| {proj.technologies}</span>}</span>
+                  {proj.link && <span className="text-purple-600 text-xs font-medium">{proj.link}</span>}
+                </div>
+                {proj.description && <div className="text-slate-700 text-xs mt-1 leading-relaxed">{proj.description}</div>}
               </div>
             ))}
           </div>
@@ -561,6 +631,23 @@ const CorporateNavyTemplate = ({ resumeData }) => {
         </section>
       )}
 
+      {projects && projects.length > 0 && (
+        <section className="mb-4">
+          <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-2">Key Projects</h2>
+          <div className="space-y-2.5">
+            {projects.map((proj, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs font-bold text-slate-900">
+                  <span>{proj.title} {proj.technologies && <span className="text-blue-800 font-medium text-[11px]">({proj.technologies})</span>}</span>
+                  {proj.link && <span className="text-blue-800 text-[11px] font-normal">{proj.link}</span>}
+                </div>
+                {proj.description && <div className="text-xs text-slate-700 mt-0.5">{proj.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {education && education.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-1.5">Education</h2>
@@ -656,6 +743,31 @@ const ExecutiveLeadershipTemplate = ({ resumeData }) => {
         </section>
       )}
 
+      {projects && projects.length > 0 && (
+        <section className="mb-5">
+          <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2.5">
+            Strategic Projects & Initiatives
+          </h2>
+          <div className="space-y-3">
+            {projects.map((proj, index) => (
+              <div key={index}>
+                <div className="flex justify-between items-baseline font-sans">
+                  <h3 className="font-bold text-slate-950 text-xs">
+                    {proj.title} {proj.technologies && <span className="text-slate-600 font-normal italic">| {proj.technologies}</span>}
+                  </h3>
+                  {proj.link && <span className="text-xs text-slate-600 italic">{proj.link}</span>}
+                </div>
+                {proj.description && (
+                  <div className="text-slate-800 text-xs pl-2 mt-0.5 leading-relaxed">
+                    {proj.description}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {education && education.length > 0 && (
         <section>
           <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
@@ -717,6 +829,23 @@ const AtsFriendlyTemplate = ({ resumeData }) => {
                   <span>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
                 {exp.description && <div className="text-xs whitespace-pre-line mt-0.5 leading-normal">{exp.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {projects && projects.length > 0 && (
+        <section className="mb-3">
+          <h2 className="text-xs font-bold uppercase border-b border-gray-400 pb-0.5 mb-1.5">PROJECTS</h2>
+          <div className="space-y-2">
+            {projects.map((proj, i) => (
+              <div key={i}>
+                <div className="flex justify-between text-xs font-bold">
+                  <span>{proj.title} {proj.technologies && <span>({proj.technologies})</span>}</span>
+                  {proj.link && <span className="font-normal">{proj.link}</span>}
+                </div>
+                {proj.description && <div className="text-xs mt-0.5 leading-normal">{proj.description}</div>}
               </div>
             ))}
           </div>

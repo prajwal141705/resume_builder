@@ -30,7 +30,10 @@ export const Login = () => {
         res?.user?.email?.toLowerCase() === 'prajwal@gmail.com'
       );
       
-      const destination = location.state?.from?.pathname || (isAdm ? '/admin/dashboard' : '/dashboard');
+      let destination = isAdm ? '/admin/dashboard' : '/dashboard';
+      if (location.state?.from?.pathname && (!isAdm || location.state.from.pathname.startsWith('/admin'))) {
+        destination = location.state.from.pathname;
+      }
       navigate(destination, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
