@@ -17,6 +17,7 @@ import {
   Briefcase,
   Layers,
   ArrowLeftRight,
+  Search,
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
@@ -32,21 +33,22 @@ export const Sidebar = ({ isOpen, onClose }) => {
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/resumes', label: 'My Resumes', icon: Files },
     { to: '/resume-builder', label: 'Create Resume', icon: FilePlus },
-    { to: '/upload-resume', label: 'Upload Resume', icon: UploadCloud, badge: 'PDF' },
-    { to: '/templates', label: 'Resume Templates', icon: LayoutTemplate },
-    { to: '/job-matcher', label: 'Job Matches', icon: Sparkles, badge: 'AI' },
-    { to: '/profile', label: 'Profile', icon: User },
+    { to: '/upload-resume', label: 'Upload PDF', icon: UploadCloud, badge: 'PDF' },
+    { to: '/templates', label: 'Browse Templates', icon: LayoutTemplate },
+    { to: '/job-matcher', label: 'AI Job Matcher', icon: Sparkles, badge: 'AI' },
+    { to: '/jobs', label: 'Find Jobs', icon: Briefcase },
+    { to: '/profile', label: 'My Profile', icon: User },
     { to: '/settings', label: 'Settings', icon: Settings },
   ];
 
   // Admin navigation items
   const adminNavItems = [
-    { to: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
-    { to: '/admin/users', label: 'User Management', icon: Users },
+    { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/admin/users', label: 'Users', icon: Users },
     { to: '/admin/resumes', label: 'Uploaded Resumes', icon: Files },
     { to: '/admin/templates', label: 'Resume Templates', icon: LayoutTemplate },
-    { to: '/admin/jobs', label: 'Job Titles / Jobs', icon: Briefcase },
-    { to: '/admin/settings', label: 'Admin Settings', icon: Settings },
+    { to: '/admin/jobs', label: 'Job Postings', icon: Briefcase },
+    { to: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   const currentNavItems = isAdmin && isAdminPath ? adminNavItems : userNavItems;
@@ -62,7 +64,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 lg:hidden transition-opacity"
         />
       )}
 

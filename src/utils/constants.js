@@ -106,6 +106,8 @@ export const TEMPLATE_OPTIONS = [
   },
 ];
 
+export const RESUME_TEMPLATES_LIST = TEMPLATE_OPTIONS;
+
 export const INITIAL_RESUME_STATE = {
   title: 'Senior Software Engineer Resume',
   template: RESUME_TEMPLATES.MODERN,

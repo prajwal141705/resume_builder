@@ -11,6 +11,7 @@ import {
   MapPin,
   DollarSign,
   Tag,
+  SlidersHorizontal,
 } from 'lucide-react';
 import adminService from '../../services/adminService';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -20,6 +21,7 @@ export const AdminJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [jobToDelete, setJobToDelete] = useState(null);
@@ -29,8 +31,10 @@ export const AdminJobs = () => {
     company: '',
     description: '',
     requiredSkills: '',
+    preferredSkills: '',
     location: 'Remote',
     jobType: 'Full-time',
+    experienceLevel: 'Mid-Level',
     salaryRange: '',
   });
 
@@ -58,8 +62,10 @@ export const AdminJobs = () => {
       company: '',
       description: '',
       requiredSkills: '',
+      preferredSkills: '',
       location: 'Remote',
       jobType: 'Full-time',
+      experienceLevel: 'Mid-Level',
       salaryRange: '',
     });
     setIsModalOpen(true);
@@ -72,8 +78,10 @@ export const AdminJobs = () => {
       company: job.company || '',
       description: job.description || '',
       requiredSkills: Array.isArray(job.requiredSkills) ? job.requiredSkills.join(', ') : '',
+      preferredSkills: Array.isArray(job.preferredSkills) ? job.preferredSkills.join(', ') : '',
       location: job.location || 'Remote',
       jobType: job.jobType || 'Full-time',
+      experienceLevel: job.experienceLevel || 'Mid-Level',
       salaryRange: job.salaryRange || '',
     });
     setIsModalOpen(true);
@@ -94,10 +102,10 @@ export const AdminJobs = () => {
     try {
       if (editingJob) {
         await adminService.updateJob(editingJob.id, payload);
-        toast.success('Job title updated successfully!');
+        toast.success('Job posting updated successfully!');
       } else {
         await adminService.createJob(payload);
-        toast.success('New job title posted successfully!');
+        toast.success('New job posted successfully!');
       }
       setIsModalOpen(false);
       loadJobs();
@@ -128,10 +136,19 @@ export const AdminJobs = () => {
     }
   };
 
-  const filteredJobs = jobs.filter((j) =>
-    (j.title || '').toLowerCase().includes(search.toLowerCase()) ||
-    (j.company || '').toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredJobs = jobs.filter((j) => {
+    const matchesSearch =
+      (j.title || '').toLowerCase().includes(search.toLowerCase()) ||
+      (j.company || '').toLowerCase().includes(search.toLowerCase()) ||
+      (j.location || '').toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      (statusFilter === 'Enabled' && j.enabled !== false) ||
+      (statusFilter === 'Disabled' && j.enabled === false);
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -143,10 +160,10 @@ export const AdminJobs = () => {
             Job Catalog Management
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Job Titles & AI Match Database
+            Job Titles & AI Match Catalog
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Manage target roles, required skills, and descriptions used by candidates and the AI matcher.
+            Create, edit, toggle, and curate job vacancies used by candidates and AI matcher algorithms.
           </p>
         </div>
 
@@ -155,25 +172,37 @@ export const AdminJobs = () => {
           className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          Add Job Title
+          Add Job Position
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex items-center justify-between gap-4">
-        <div className="relative flex-1">
+      {/* Search & Status Filters */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search job titles or companies..."
-            className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            placeholder="Search jobs by title, company, or location..."
+            className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
           />
         </div>
-        <span className="text-xs font-bold text-slate-500 whitespace-nowrap">
-          {filteredJobs.length} Jobs Listed
-        </span>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="text-xs px-3 py-2 border border-slate-200 rounded-xl bg-slate-50"
+          >
+            <option value="All">All Statuses</option>
+            <option value="Enabled">Enabled Only</option>
+            <option value="Disabled">Disabled Only</option>
+          </select>
+          <span className="text-xs font-bold text-slate-500 whitespace-nowrap">
+            {filteredJobs.length} Jobs
+          </span>
+        </div>
       </div>
 
       {/* Jobs Grid */}
@@ -207,7 +236,9 @@ export const AdminJobs = () => {
                   </span>
                 </div>
 
-                <p className="text-xs font-semibold text-brand-600 mb-2">{job.company}</p>
+                <p className="text-xs font-semibold text-brand-600 mb-2">
+                  {job.company} • <span className="text-slate-500 font-normal">{job.jobType || 'Full-time'}</span>
+                </p>
 
                 <p className="text-xs text-slate-500 line-clamp-3 mb-3 leading-relaxed">
                   {job.description}
@@ -262,11 +293,11 @@ export const AdminJobs = () => {
 
       {/* Add / Edit Job Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-slate-900">
-                {editingJob ? 'Edit Job Posting' : 'Add New Job Title'}
+                {editingJob ? 'Edit Job Posting' : 'Add New Job Position'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-700">✕</button>
             </div>
@@ -279,21 +310,36 @@ export const AdminJobs = () => {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. Senior Full Stack Engineer"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  placeholder="e.g. React Developer, Data Scientist"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Company *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  placeholder="e.g. TechCorp Global"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Company *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    placeholder="e.g. PixelCraft Digital"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Employment Type</label>
+                  <select
+                    value={formData.jobType}
+                    onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
+                  >
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Remote">Remote</option>
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -304,7 +350,7 @@ export const AdminJobs = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Paste responsibilities and job requirements..."
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden leading-relaxed"
                 />
               </div>
 
@@ -314,8 +360,8 @@ export const AdminJobs = () => {
                   type="text"
                   value={formData.requiredSkills}
                   onChange={(e) => setFormData({ ...formData, requiredSkills: e.target.value })}
-                  placeholder="React, Java, Spring Boot, MongoDB, Docker, Git"
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  placeholder="React, TypeScript, Next.js, Tailwind CSS, Jest, Git"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                 />
               </div>
 
@@ -326,8 +372,8 @@ export const AdminJobs = () => {
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    placeholder="e.g. San Francisco, CA (Remote)"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                    placeholder="e.g. San Francisco, CA (Hybrid)"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                   />
                 </div>
 
@@ -337,8 +383,8 @@ export const AdminJobs = () => {
                     type="text"
                     value={formData.salaryRange}
                     onChange={(e) => setFormData({ ...formData, salaryRange: e.target.value })}
-                    placeholder="e.g. $130,000 - $160,000"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                    placeholder="e.g. $105,000 - $135,000"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -365,9 +411,9 @@ export const AdminJobs = () => {
 
       {/* Delete Confirmation Modal */}
       {jobToDelete && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
-            <h3 className="text-base font-bold text-slate-900">Delete Job Posting?</h3>
+            <h3 className="text-base font-bold text-slate-900">Delete Job Position?</h3>
             <p className="text-xs text-slate-500">
               Are you sure you want to delete <strong>{jobToDelete.title}</strong>?
             </p>

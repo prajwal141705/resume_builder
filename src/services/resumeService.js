@@ -1,7 +1,7 @@
 import api from './api';
 import { STORAGE_KEYS, INITIAL_RESUME_STATE } from '../utils/constants';
 
-// Local storage helper for offline / demo fallback
+// Local storage helper for offline fallback
 const getLocalResumes = () => {
   try {
     const saved = localStorage.getItem('resumai_local_resumes');
@@ -36,7 +36,6 @@ export const resumeService = {
       const response = await api.post('/resumes', resumeData);
       return response.data;
     } catch (err) {
-      // If backend is not available, provide local storage fallback with proper schema
       console.warn('Backend unavailable, saving resume locally:', err.message);
       const localList = getLocalResumes();
       const newResume = {
@@ -146,6 +145,54 @@ export const resumeService = {
       const filtered = localList.filter((r) => r.id !== id && r._id !== id);
       saveLocalResumes(filtered);
       return { success: true, message: 'Deleted successfully' };
+    }
+  },
+
+  /**
+   * Get version history for a resume
+   */
+  async getVersions(resumeId) {
+    try {
+      const response = await api.get(`/resumes/${resumeId}/versions`);
+      return response.data;
+    } catch (err) {
+      console.warn('Backend unavailable for version history:', err.message);
+      return [];
+    }
+  },
+
+  /**
+   * Create a manual version snapshot
+   */
+  async createVersion(resumeId, versionName, notes) {
+    try {
+      const response = await api.post(`/resumes/${resumeId}/versions`, {
+        versionName,
+        notes,
+      });
+      return response.data;
+    } catch (err) {
+      console.warn('Backend unavailable, version created locally:', err.message);
+      return {
+        id: `ver-${Date.now()}`,
+        versionNumber: 1,
+        versionName: versionName || 'Manual Snapshot',
+        changeNotes: notes,
+        createdAt: new Date().toISOString(),
+      };
+    }
+  },
+
+  /**
+   * Restore a previous resume version
+   */
+  async restoreVersion(resumeId, versionId) {
+    try {
+      const response = await api.post(`/resumes/${resumeId}/versions/${versionId}/restore`);
+      return response.data;
+    } catch (err) {
+      console.warn('Failed to restore version on backend:', err.message);
+      throw err;
     }
   },
 };

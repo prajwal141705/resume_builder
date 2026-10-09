@@ -1,6 +1,35 @@
 import React from 'react';
 import { RESUME_TEMPLATES } from '../utils/constants';
-import { Mail, Phone, MapPin, Linkedin, Github, Award, Globe, Code, CheckCircle, Briefcase, GraduationCap } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Github, Award, Globe, Code, CheckCircle, Briefcase, GraduationCap, Star, BookOpen, Layers } from 'lucide-react';
+
+/* Helper to generate dynamic styles from customization */
+const getStyleConfig = (resumeData = {}) => {
+  const {
+    accentColor = '#4f46e5',
+    fontFamily = 'Inter, sans-serif',
+    fontSize = 'medium',
+    spacing = 'normal',
+    margins = 'normal',
+  } = resumeData;
+
+  const fontSizes = {
+    small: 'text-[12px] leading-relaxed',
+    medium: 'text-[13px] leading-relaxed',
+    large: 'text-[14px] leading-relaxed',
+  };
+
+  const paddings = {
+    tight: 'p-6 sm:p-8',
+    normal: 'p-8 sm:p-10',
+    wide: 'p-10 sm:p-12',
+  };
+
+  return {
+    style: { fontFamily },
+    className: `${fontSizes[fontSize] || fontSizes.medium} ${paddings[margins] || paddings.normal}`,
+    accentColor,
+  };
+};
 
 /* =========================================================================
    TEMPLATE 1: MODERN TECH
@@ -15,46 +44,56 @@ const ModernTechTemplate = ({ resumeData }) => {
     internships = [],
     projects = [],
     skills = [],
+    technicalSkills = [],
     certifications = [],
     achievements = [],
     languages = [],
+    hobbies = [],
+    customSections = [],
+    accentColor = '#4f46e5',
   } = resumeData;
 
+  const allSkills = [...skills, ...technicalSkills];
+  const { style, className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
-      <header className="border-b-2 border-brand-500 pb-5 mb-5">
-        <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`} style={style}>
+      {/* Header */}
+      <header className="border-b-2 pb-5 mb-5" style={{ borderColor: accentColor }}>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase">
           {personalInfo.fullName || 'YOUR NAME'}
         </h1>
-        <p className="text-sm font-semibold text-brand-600 mt-0.5 tracking-wide">
+        <p className="text-sm font-bold tracking-wide mt-1" style={{ color: accentColor }}>
           {experience[0]?.role || 'FULL STACK SOFTWARE ENGINEER'}
         </p>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-slate-600">
-          {personalInfo.email && <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-brand-600" />{personalInfo.email}</span>}
-          {personalInfo.phone && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-brand-600" />{personalInfo.phone}</span>}
-          {personalInfo.location && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-brand-600" />{personalInfo.location}</span>}
-          {personalInfo.linkedin && <span className="flex items-center gap-1.5 text-brand-700"><Linkedin className="w-3.5 h-3.5 text-brand-600" />{personalInfo.linkedin}</span>}
-          {personalInfo.github && <span className="flex items-center gap-1.5 text-brand-700"><Github className="w-3.5 h-3.5 text-brand-600" />{personalInfo.github}</span>}
+          {personalInfo.email && <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" style={{ color: accentColor }} />{personalInfo.email}</span>}
+          {personalInfo.phone && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" style={{ color: accentColor }} />{personalInfo.phone}</span>}
+          {personalInfo.location && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" style={{ color: accentColor }} />{personalInfo.location}</span>}
+          {personalInfo.linkedin && <span className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" style={{ color: accentColor }} />{personalInfo.linkedin}</span>}
+          {personalInfo.github && <span className="flex items-center gap-1.5"><Github className="w-3.5 h-3.5" style={{ color: accentColor }} />{personalInfo.github}</span>}
         </div>
       </header>
 
-      {summary && (
+      {/* Summary / Objective */}
+      {(summary || careerObjective) && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2 border-l-4 border-brand-600">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
             Professional Summary
           </h2>
-          <p className="text-slate-700 leading-normal text-justify">{summary}</p>
+          <p className="text-slate-700 leading-relaxed text-justify">{summary || careerObjective}</p>
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {/* Skills */}
+      {allSkills.length > 0 && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2 border-l-4 border-brand-600">
-            Technical Skills
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
+            Technical & Professional Skills
           </h2>
           <div className="flex flex-wrap gap-1.5">
-            {skills.map((skill, index) => (
+            {allSkills.map((skill, index) => (
               <span key={index} className="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-800 rounded font-medium text-xs">
                 {skill}
               </span>
@@ -63,9 +102,10 @@ const ModernTechTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {/* Experience */}
+      {experience.length > 0 && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2.5 border-l-4 border-brand-600">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2.5 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
             Work Experience
           </h2>
           <div className="space-y-4">
@@ -75,7 +115,7 @@ const ModernTechTemplate = ({ resumeData }) => {
                   <h3 className="font-bold text-slate-900 text-sm">{exp.role}</h3>
                   <span className="text-xs font-medium text-slate-500">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
-                <div className="text-xs font-semibold text-brand-700 mb-1.5">{exp.company}</div>
+                <div className="text-xs font-semibold mb-1.5" style={{ color: accentColor }}>{exp.company}</div>
                 {exp.description && <div className="text-slate-700 whitespace-pre-line text-xs pl-2 border-l border-slate-200 space-y-1">{exp.description}</div>}
               </div>
             ))}
@@ -83,17 +123,41 @@ const ModernTechTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
+      {/* Internships */}
+      {internships.length > 0 && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2.5 border-l-4 border-brand-600">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2.5 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
+            Internships & Apprenticeships
+          </h2>
+          <div className="space-y-3">
+            {internships.map((intern, index) => (
+              <div key={index}>
+                <div className="flex items-baseline justify-between">
+                  <h3 className="font-bold text-slate-900 text-sm">{intern.role}</h3>
+                  <span className="text-xs font-medium text-slate-500">{intern.startDate} – {intern.current ? 'Present' : intern.endDate}</span>
+                </div>
+                <div className="text-xs font-semibold mb-1" style={{ color: accentColor }}>{intern.company}</div>
+                {intern.description && <div className="text-slate-700 text-xs pl-2 border-l border-slate-200">{intern.description}</div>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Projects */}
+      {projects.length > 0 && (
+        <section className="mb-5">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2.5 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
             Key Projects
           </h2>
           <div className="space-y-3">
             {projects.map((proj, index) => (
               <div key={index}>
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900 text-sm">{proj.title} {proj.technologies && <span className="text-[11px] text-slate-500 font-mono">| {proj.technologies}</span>}</span>
-                  {proj.link && <span className="text-xs text-brand-600 font-medium">{proj.link}</span>}
+                  <span className="font-bold text-slate-900 text-sm">
+                    {proj.title} {proj.technologies && <span className="text-[11px] text-slate-500 font-mono">| {proj.technologies}</span>}
+                  </span>
+                  {proj.link && <span className="text-xs font-medium" style={{ color: accentColor }}>{proj.link}</span>}
                 </div>
                 {proj.description && <p className="text-slate-700 text-xs mt-1 leading-normal">{proj.description}</p>}
               </div>
@@ -102,9 +166,10 @@ const ModernTechTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {education && education.length > 0 && (
+      {/* Education */}
+      {education.length > 0 && (
         <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2.5 border-l-4 border-brand-600">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2.5 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
             Education
           </h2>
           <div className="space-y-2.5">
@@ -122,21 +187,64 @@ const ModernTechTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {certifications && certifications.length > 0 && (
-        <section>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-brand-700 bg-brand-50/80 px-2 py-1 rounded mb-2 border-l-4 border-brand-600">
-            Certifications
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            {certifications.map((cert, index) => (
-              <div key={index} className="flex items-start gap-1.5 text-slate-700">
-                <Award className="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5" />
-                <span><strong>{cert.name}</strong> – {cert.issuer} ({cert.issueDate})</span>
+      {/* Certifications & Achievements Grid */}
+      {(certifications.length > 0 || achievements.length > 0) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          {certifications.length > 0 && (
+            <section>
+              <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
+                Certifications
+              </h2>
+              <div className="space-y-1 text-xs">
+                {certifications.map((cert, index) => (
+                  <div key={index} className="flex items-start gap-1.5 text-slate-700">
+                    <Award className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: accentColor }} />
+                    <span><strong>{cert.name}</strong> – {cert.issuer} ({cert.issueDate})</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+
+          {achievements.length > 0 && (
+            <section>
+              <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
+                Key Achievements
+              </h2>
+              <ul className="space-y-1 text-xs text-slate-700">
+                {achievements.map((ach, index) => (
+                  <li key={index} className="flex items-start gap-1.5">
+                    <Star className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: accentColor }} />
+                    <span>{ach}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
       )}
+
+      {/* Languages & Hobbies */}
+      {(languages.length > 0 || hobbies.length > 0) && (
+        <div className="flex flex-wrap gap-6 text-xs text-slate-600 border-t border-slate-200 pt-3">
+          {languages.length > 0 && (
+            <div><strong>Languages:</strong> {languages.join(', ')}</div>
+          )}
+          {hobbies.length > 0 && (
+            <div><strong>Interests:</strong> {hobbies.join(', ')}</div>
+          )}
+        </div>
+      )}
+
+      {/* Custom Sections */}
+      {customSections.map((sec, idx) => (
+        <section key={idx} className="mt-4">
+          <h2 className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded mb-2 border-l-4" style={{ backgroundColor: `${accentColor}15`, color: accentColor, borderColor: accentColor }}>
+            {sec.heading}
+          </h2>
+          <p className="text-xs text-slate-700 whitespace-pre-line">{sec.content}</p>
+        </section>
+      ))}
     </div>
   );
 };
@@ -145,11 +253,25 @@ const ModernTechTemplate = ({ resumeData }) => {
    TEMPLATE 2: CLASSIC TRADITIONAL
    ========================================================================= */
 const ClassicTraditionalTemplate = ({ resumeData }) => {
-  const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [], certifications = [] } = resumeData;
+  const {
+    personalInfo = {},
+    summary = '',
+    education = [],
+    experience = [],
+    internships = [],
+    projects = [],
+    skills = [],
+    certifications = [],
+    achievements = [],
+    languages = [],
+  } = resumeData;
+
+  const { className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-900 p-9 font-serif leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-slate-900 min-h-[950px] font-serif shadow-xs ${className}`}>
       <header className="text-center border-b-2 border-slate-900 pb-3 mb-4">
-        <h1 className="text-2xl font-bold tracking-normal uppercase text-slate-950 font-serif">
+        <h1 className="text-2xl font-bold uppercase tracking-wider text-slate-950">
           {personalInfo.fullName || 'YOUR NAME'}
         </h1>
         <div className="flex flex-wrap justify-center items-center gap-x-3 text-xs text-slate-700 mt-1 font-sans">
@@ -169,7 +291,7 @@ const ClassicTraditionalTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-1.5 font-sans">
             Core Competencies
@@ -178,33 +300,33 @@ const ClassicTraditionalTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-2 font-sans">
             Professional Experience
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-3 font-sans text-xs">
             {experience.map((exp, idx) => (
               <div key={idx}>
-                <div className="flex justify-between font-bold text-xs font-sans">
+                <div className="flex justify-between font-bold">
                   <span>{exp.company} — {exp.role}</span>
-                  <span className="text-slate-600">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
+                  <span className="text-slate-600 font-normal">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
-                {exp.description && <div className="text-xs text-slate-800 whitespace-pre-line mt-1 leading-relaxed">{exp.description}</div>}
+                {exp.description && <div className="text-slate-800 whitespace-pre-line mt-1 leading-relaxed">{exp.description}</div>}
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {projects && projects.length > 0 && (
+      {projects.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-2 font-sans">
             Key Projects
           </h2>
-          <div className="space-y-2.5">
+          <div className="space-y-2 font-sans text-xs">
             {projects.map((proj, idx) => (
-              <div key={idx} className="text-xs font-sans">
+              <div key={idx}>
                 <div className="flex justify-between font-bold">
                   <span>{proj.title} {proj.technologies && <span className="text-slate-600 font-normal">({proj.technologies})</span>}</span>
                   {proj.link && <span className="text-slate-600 font-normal">{proj.link}</span>}
@@ -216,10 +338,10 @@ const ClassicTraditionalTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase tracking-widest border-b border-slate-400 pb-0.5 mb-2 font-sans">
-            Education
+            Education & Credentials
           </h2>
           <div className="space-y-2 font-sans text-xs">
             {education.map((edu, idx) => (
@@ -239,15 +361,26 @@ const ClassicTraditionalTemplate = ({ resumeData }) => {
    TEMPLATE 3: PROFESSIONAL CORPORATE
    ========================================================================= */
 const ProfessionalCorporateTemplate = ({ resumeData }) => {
-  const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const {
+    personalInfo = {},
+    summary = '',
+    education = [],
+    experience = [],
+    projects = [],
+    skills = [],
+    accentColor = '#0d9488',
+  } = resumeData;
+
+  const { style, className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
-      <div className="bg-teal-800 text-white p-6 rounded-xl mb-5 flex flex-wrap justify-between items-center gap-4">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`} style={style}>
+      <div className="p-6 rounded-2xl mb-5 flex flex-wrap justify-between items-center gap-4 text-white shadow-sm" style={{ backgroundColor: accentColor }}>
         <div>
           <h1 className="text-2xl font-black uppercase tracking-tight">{personalInfo.fullName || 'YOUR NAME'}</h1>
-          <p className="text-teal-200 text-xs font-semibold tracking-wider uppercase mt-0.5">{experience[0]?.role || 'Professional'}</p>
+          <p className="text-white/80 text-xs font-semibold tracking-wider uppercase mt-0.5">{experience[0]?.role || 'Professional'}</p>
         </div>
-        <div className="text-xs space-y-0.5 text-teal-100 text-right">
+        <div className="text-xs space-y-0.5 text-white/90 text-right">
           <div>{personalInfo.email}</div>
           <div>{personalInfo.phone} • {personalInfo.location}</div>
           <div>{personalInfo.linkedin}</div>
@@ -256,59 +389,52 @@ const ProfessionalCorporateTemplate = ({ resumeData }) => {
 
       {summary && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2">Profile Overview</h2>
-          <p className="text-slate-700 leading-normal">{summary}</p>
+          <h2 className="text-xs font-bold uppercase tracking-wider border-b-2 pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+            Profile Overview
+          </h2>
+          <p className="text-slate-700 leading-relaxed">{summary}</p>
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2">Skills & Expertise</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider border-b-2 pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+            Skills & Expertise
+          </h2>
           <div className="flex flex-wrap gap-1.5">
             {skills.map((s, i) => (
-              <span key={i} className="px-2 py-0.5 bg-teal-50 text-teal-900 border border-teal-200 rounded text-xs font-medium">{s}</span>
+              <span key={i} className="px-2 py-0.5 rounded text-xs font-semibold border" style={{ backgroundColor: `${accentColor}10`, color: accentColor, borderColor: `${accentColor}30` }}>
+                {s}
+              </span>
             ))}
           </div>
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-3">Experience</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider border-b-2 pb-1 mb-3" style={{ color: accentColor, borderColor: accentColor }}>
+            Experience
+          </h2>
           <div className="space-y-4">
             {experience.map((exp, i) => (
-              <div key={i} className="border-l-2 border-teal-700 pl-3">
+              <div key={i} className="border-l-2 pl-3" style={{ borderColor: accentColor }}>
                 <div className="flex justify-between text-xs font-bold text-slate-900">
-                  <span>{exp.role} <span className="font-normal text-teal-700">@ {exp.company}</span></span>
+                  <span>{exp.role} <span className="font-normal" style={{ color: accentColor }}>@ {exp.company}</span></span>
                   <span className="text-slate-500 font-normal">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
                 </div>
-                {exp.description && <div className="text-slate-700 text-xs whitespace-pre-line mt-1">{exp.description}</div>}
+                {exp.description && <div className="text-slate-700 text-xs whitespace-pre-line mt-1 leading-relaxed">{exp.description}</div>}
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2.5">Projects & Portfolio</h2>
-          <div className="space-y-3">
-            {projects.map((proj, i) => (
-              <div key={i} className="border-l-2 border-teal-700 pl-3">
-                <div className="flex justify-between text-xs font-bold text-slate-900">
-                  <span>{proj.title} {proj.technologies && <span className="text-teal-700 font-medium text-[11px]">| {proj.technologies}</span>}</span>
-                  {proj.link && <span className="text-teal-700 text-[11px] font-normal">{proj.link}</span>}
-                </div>
-                {proj.description && <div className="text-slate-700 text-xs mt-1 leading-normal">{proj.description}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
-          <h2 className="text-xs font-bold uppercase text-teal-800 tracking-wider border-b-2 border-teal-800 pb-1 mb-2">Education</h2>
+          <h2 className="text-xs font-bold uppercase tracking-wider border-b-2 pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+            Education
+          </h2>
           <div className="space-y-2 text-xs">
             {education.map((edu, i) => (
               <div key={i} className="flex justify-between">
@@ -328,8 +454,10 @@ const ProfessionalCorporateTemplate = ({ resumeData }) => {
    ========================================================================= */
 const MinimalCleanTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const { style, className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`} style={style}>
       <header className="mb-6">
         <h1 className="text-3xl font-light text-slate-900 tracking-tight">{personalInfo.fullName || 'YOUR NAME'}</h1>
         <div className="flex flex-wrap gap-x-4 text-xs text-slate-500 mt-2">
@@ -346,14 +474,14 @@ const MinimalCleanTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-6">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Capabilities</h2>
           <p className="text-xs text-slate-800 leading-relaxed font-mono">{skills.join(', ')}</p>
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-6">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Experience</h2>
           <div className="space-y-4">
@@ -370,24 +498,7 @@ const MinimalCleanTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-6">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Projects</h2>
-          <div className="space-y-3">
-            {projects.map((proj, i) => (
-              <div key={i}>
-                <div className="flex justify-between text-xs font-semibold text-slate-900">
-                  <span>{proj.title} {proj.technologies && <span className="text-slate-400 font-mono text-[11px]">({proj.technologies})</span>}</span>
-                  {proj.link && <span className="text-slate-400 font-normal">{proj.link}</span>}
-                </div>
-                {proj.description && <div className="text-xs text-slate-600 mt-1">{proj.description}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Education</h2>
           <div className="space-y-2 text-xs">
@@ -409,8 +520,10 @@ const MinimalCleanTemplate = ({ resumeData }) => {
    ========================================================================= */
 const CreativePortfolioTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const { className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`}>
       <div className="bg-gradient-to-r from-purple-700 via-indigo-600 to-pink-600 text-white p-6 rounded-2xl mb-6 shadow-md">
         <h1 className="text-2xl font-black uppercase tracking-tight">{personalInfo.fullName || 'YOUR NAME'}</h1>
         <p className="text-purple-200 text-xs font-bold uppercase tracking-widest mt-1">Creative Engineer & Builder</p>
@@ -425,11 +538,11 @@ const CreativePortfolioTemplate = ({ resumeData }) => {
       {summary && (
         <section className="mb-5 bg-purple-50/50 p-4 rounded-xl border border-purple-100">
           <h2 className="text-xs font-bold uppercase text-purple-900 tracking-wider mb-1">About Me</h2>
-          <p className="text-slate-700 text-xs leading-normal">{summary}</p>
+          <p className="text-slate-700 text-xs leading-relaxed">{summary}</p>
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-5">
           <h2 className="text-xs font-bold uppercase text-purple-800 tracking-wider mb-2">Skills & Toolkit</h2>
           <div className="flex flex-wrap gap-1.5">
@@ -440,7 +553,7 @@ const CreativePortfolioTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-5">
           <h2 className="text-xs font-bold uppercase text-purple-800 tracking-wider mb-3">Work History</h2>
           <div className="space-y-4">
@@ -457,24 +570,7 @@ const CreativePortfolioTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-bold uppercase text-purple-800 tracking-wider mb-3">Featured Projects</h2>
-          <div className="space-y-3">
-            {projects.map((proj, i) => (
-              <div key={i} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="flex justify-between text-xs font-bold text-purple-900">
-                  <span>{proj.title} {proj.technologies && <span className="text-purple-600 font-medium text-[11px]">| {proj.technologies}</span>}</span>
-                  {proj.link && <span className="text-purple-600 text-xs font-medium">{proj.link}</span>}
-                </div>
-                {proj.description && <div className="text-slate-700 text-xs mt-1 leading-relaxed">{proj.description}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase text-purple-800 tracking-wider mb-2">Education</h2>
           <div className="space-y-2 text-xs">
@@ -496,6 +592,7 @@ const CreativePortfolioTemplate = ({ resumeData }) => {
    ========================================================================= */
 const DeveloperMonospaceTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+
   return (
     <div className="bg-slate-950 text-slate-200 p-8 font-mono leading-relaxed text-[12px] shadow-sm min-h-[950px] border border-slate-800 rounded-lg">
       <header className="border-b border-emerald-500/40 pb-4 mb-4">
@@ -515,7 +612,7 @@ const DeveloperMonospaceTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-4">
           <div className="text-emerald-400 text-xs font-bold mb-1.5">/** TECH_STACK **/</div>
           <div className="flex flex-wrap gap-1.5">
@@ -528,7 +625,7 @@ const DeveloperMonospaceTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-4">
           <div className="text-emerald-400 text-xs font-bold mb-2">/** EXPERIENCE **/</div>
           <div className="space-y-3">
@@ -545,24 +642,7 @@ const DeveloperMonospaceTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-4">
-          <div className="text-emerald-400 text-xs font-bold mb-2">/** PROJECTS **/</div>
-          <div className="space-y-2">
-            {projects.map((proj, i) => (
-              <div key={i} className="text-[11px]">
-                <div className="flex justify-between text-white">
-                  <span>&gt; {proj.title}</span>
-                  {proj.link && <span className="text-emerald-400">{proj.link}</span>}
-                </div>
-                {proj.description && <p className="text-slate-400 mt-0.5">{proj.description}</p>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <div className="text-emerald-400 text-xs font-bold mb-1">/** EDUCATION **/</div>
           <div className="text-[11px] text-slate-300">
@@ -584,8 +664,10 @@ const DeveloperMonospaceTemplate = ({ resumeData }) => {
    ========================================================================= */
 const CorporateNavyTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const { style, className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`} style={style}>
       <div className="border-t-8 border-blue-900 pt-4 pb-4 mb-4 border-b border-slate-200">
         <h1 className="text-2xl font-extrabold text-blue-950 uppercase">{personalInfo.fullName || 'YOUR NAME'}</h1>
         <div className="flex flex-wrap gap-x-4 text-xs text-slate-600 mt-1">
@@ -599,11 +681,11 @@ const CorporateNavyTemplate = ({ resumeData }) => {
       {summary && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-1.5">Executive Summary</h2>
-          <p className="text-slate-700 text-xs leading-normal">{summary}</p>
+          <p className="text-slate-700 text-xs leading-relaxed">{summary}</p>
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-1.5">Key Competencies</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 text-xs text-slate-700">
@@ -614,7 +696,7 @@ const CorporateNavyTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-4">
           <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-2">Professional Experience</h2>
           <div className="space-y-3">
@@ -631,24 +713,7 @@ const CorporateNavyTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-4">
-          <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-2">Key Projects</h2>
-          <div className="space-y-2.5">
-            {projects.map((proj, i) => (
-              <div key={i}>
-                <div className="flex justify-between text-xs font-bold text-slate-900">
-                  <span>{proj.title} {proj.technologies && <span className="text-blue-800 font-medium text-[11px]">({proj.technologies})</span>}</span>
-                  {proj.link && <span className="text-blue-800 text-[11px] font-normal">{proj.link}</span>}
-                </div>
-                {proj.description && <div className="text-xs text-slate-700 mt-0.5">{proj.description}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase text-blue-900 border-b border-blue-200 pb-1 mb-1.5">Education</h2>
           <div className="space-y-1.5 text-xs">
@@ -670,8 +735,10 @@ const CorporateNavyTemplate = ({ resumeData }) => {
    ========================================================================= */
 const ExecutiveLeadershipTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const { className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-slate-900 p-9 font-serif leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-slate-900 min-h-[950px] font-serif shadow-xs ${className}`}>
       <header className="border-b-4 border-slate-900 pb-4 mb-5">
         <div className="flex justify-between items-end flex-wrap gap-2">
           <div>
@@ -699,7 +766,7 @@ const ExecutiveLeadershipTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-5">
           <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
             Key Competencies & Technical Mastery
@@ -715,7 +782,7 @@ const ExecutiveLeadershipTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-5">
           <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-3">
             Professional Experience & Career History
@@ -743,32 +810,7 @@ const ExecutiveLeadershipTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-5">
-          <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2.5">
-            Strategic Projects & Initiatives
-          </h2>
-          <div className="space-y-3">
-            {projects.map((proj, index) => (
-              <div key={index}>
-                <div className="flex justify-between items-baseline font-sans">
-                  <h3 className="font-bold text-slate-950 text-xs">
-                    {proj.title} {proj.technologies && <span className="text-slate-600 font-normal italic">| {proj.technologies}</span>}
-                  </h3>
-                  {proj.link && <span className="text-xs text-slate-600 italic">{proj.link}</span>}
-                </div>
-                {proj.description && (
-                  <div className="text-slate-800 text-xs pl-2 mt-0.5 leading-relaxed">
-                    {proj.description}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <h2 className="text-xs font-sans font-black uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
             Education
@@ -795,8 +837,10 @@ const ExecutiveLeadershipTemplate = ({ resumeData }) => {
    ========================================================================= */
 const AtsFriendlyTemplate = ({ resumeData }) => {
   const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [] } = resumeData;
+  const { style, className } = getStyleConfig(resumeData);
+
   return (
-    <div className="bg-white text-black p-8 font-sans leading-relaxed text-[13px] shadow-sm min-h-[950px]">
+    <div className={`bg-white text-black min-h-[950px] shadow-xs ${className}`} style={style}>
       <header className="border-b border-black pb-3 mb-3">
         <h1 className="text-2xl font-bold uppercase text-black">{personalInfo.fullName || 'YOUR NAME'}</h1>
         <div className="text-xs text-gray-800 mt-1">
@@ -811,14 +855,14 @@ const AtsFriendlyTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {skills && skills.length > 0 && (
+      {skills.length > 0 && (
         <section className="mb-3">
           <h2 className="text-xs font-bold uppercase border-b border-gray-400 pb-0.5 mb-1">SKILLS</h2>
           <p className="text-xs font-medium">{skills.join(', ')}</p>
         </section>
       )}
 
-      {experience && experience.length > 0 && (
+      {experience.length > 0 && (
         <section className="mb-3">
           <h2 className="text-xs font-bold uppercase border-b border-gray-400 pb-0.5 mb-2">WORK EXPERIENCE</h2>
           <div className="space-y-3">
@@ -835,24 +879,7 @@ const AtsFriendlyTemplate = ({ resumeData }) => {
         </section>
       )}
 
-      {projects && projects.length > 0 && (
-        <section className="mb-3">
-          <h2 className="text-xs font-bold uppercase border-b border-gray-400 pb-0.5 mb-1.5">PROJECTS</h2>
-          <div className="space-y-2">
-            {projects.map((proj, i) => (
-              <div key={i}>
-                <div className="flex justify-between text-xs font-bold">
-                  <span>{proj.title} {proj.technologies && <span>({proj.technologies})</span>}</span>
-                  {proj.link && <span className="font-normal">{proj.link}</span>}
-                </div>
-                {proj.description && <div className="text-xs mt-0.5 leading-normal">{proj.description}</div>}
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {education && education.length > 0 && (
+      {education.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase border-b border-gray-400 pb-0.5 mb-1">EDUCATION</h2>
           <div className="space-y-1 text-xs">
@@ -873,42 +900,62 @@ const AtsFriendlyTemplate = ({ resumeData }) => {
    TEMPLATE 10: TWO COLUMN COMPACT
    ========================================================================= */
 const TwoColumnCompactTemplate = ({ resumeData }) => {
-  const { personalInfo = {}, summary = '', education = [], experience = [], projects = [], skills = [], certifications = [] } = resumeData;
+  const {
+    personalInfo = {},
+    summary = '',
+    education = [],
+    experience = [],
+    projects = [],
+    skills = [],
+    accentColor = '#0891b2',
+  } = resumeData;
+
+  const { style, className } = getStyleConfig(resumeData);
 
   return (
-    <div className="bg-white text-slate-800 p-8 font-sans leading-relaxed text-[12px] shadow-sm min-h-[950px]">
-      <header className="border-b-2 border-cyan-700 pb-4 mb-5">
+    <div className={`bg-white text-slate-800 min-h-[950px] shadow-xs ${className}`} style={style}>
+      <header className="border-b-2 pb-4 mb-5" style={{ borderColor: accentColor }}>
         <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{personalInfo.fullName || 'YOUR NAME'}</h1>
-        <p className="text-xs font-bold text-cyan-700 uppercase tracking-wider">{experience[0]?.role || 'Software Engineer'}</p>
+        <p className="text-xs font-bold uppercase tracking-wider" style={{ color: accentColor }}>
+          {experience[0]?.role || 'Software Engineer'}
+        </p>
       </header>
 
       <div className="grid grid-cols-12 gap-5">
         {/* Left Column (4 cols) */}
-        <div className="col-span-4 bg-slate-50 p-4 rounded-xl space-y-4 border border-slate-100">
+        <div className="col-span-12 sm:col-span-4 bg-slate-50 p-4 rounded-xl space-y-4 border border-slate-100">
           <div>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-2">Contact</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+              Contact
+            </h3>
             <div className="space-y-1.5 text-[11px] text-slate-600">
               <div className="truncate">{personalInfo.email}</div>
               <div>{personalInfo.phone}</div>
               <div>{personalInfo.location}</div>
-              <div className="truncate text-cyan-800">{personalInfo.linkedin}</div>
+              <div className="truncate font-medium" style={{ color: accentColor }}>{personalInfo.linkedin}</div>
             </div>
           </div>
 
-          {skills && skills.length > 0 && (
+          {skills.length > 0 && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-2">Skills</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+                Skills
+              </h3>
               <div className="flex flex-wrap gap-1">
                 {skills.map((s, i) => (
-                  <span key={i} className="px-1.5 py-0.5 bg-white border border-slate-200 text-slate-700 rounded text-[10px]">{s}</span>
+                  <span key={i} className="px-1.5 py-0.5 bg-white border border-slate-200 text-slate-700 rounded text-[10px] font-medium">
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
           )}
 
-          {education && education.length > 0 && (
+          {education.length > 0 && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-2">Education</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+                Education
+              </h3>
               <div className="space-y-2 text-[11px]">
                 {education.map((edu, i) => (
                   <div key={i}>
@@ -923,22 +970,26 @@ const TwoColumnCompactTemplate = ({ resumeData }) => {
         </div>
 
         {/* Right Column (8 cols) */}
-        <div className="col-span-8 space-y-4">
+        <div className="col-span-12 sm:col-span-8 space-y-4">
           {summary && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-1.5">Profile</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-1.5" style={{ color: accentColor, borderColor: accentColor }}>
+                Profile
+              </h3>
               <p className="text-slate-700 text-xs leading-normal">{summary}</p>
             </div>
           )}
 
-          {experience && experience.length > 0 && (
+          {experience.length > 0 && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-2">Work History</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+                Work History
+              </h3>
               <div className="space-y-3">
                 {experience.map((exp, i) => (
                   <div key={i}>
                     <div className="flex justify-between font-bold text-xs">
-                      <span>{exp.role} <span className="font-normal text-cyan-800">@ {exp.company}</span></span>
+                      <span>{exp.role} <span className="font-normal" style={{ color: accentColor }}>@ {exp.company}</span></span>
                       <span className="text-slate-400 text-[11px] font-normal">{exp.startDate} - {exp.current ? 'Present' : exp.endDate}</span>
                     </div>
                     {exp.description && <div className="text-slate-700 text-[11px] whitespace-pre-line mt-0.5">{exp.description}</div>}
@@ -948,9 +999,11 @@ const TwoColumnCompactTemplate = ({ resumeData }) => {
             </div>
           )}
 
-          {projects && projects.length > 0 && (
+          {projects.length > 0 && (
             <div>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider text-cyan-900 border-b border-cyan-700 pb-1 mb-2">Projects</h3>
+              <h3 className="text-[11px] font-bold uppercase tracking-wider border-b pb-1 mb-2" style={{ color: accentColor, borderColor: accentColor }}>
+                Projects
+              </h3>
               <div className="space-y-2">
                 {projects.map((proj, i) => (
                   <div key={i} className="text-[11px]">
@@ -972,6 +1025,11 @@ const TwoColumnCompactTemplate = ({ resumeData }) => {
    ========================================================================= */
 export const TemplatePreview = ({ template = RESUME_TEMPLATES.MODERN, resumeData }) => {
   const normTemplate = (template || 'modern').toLowerCase();
+
+  // If user requested 2-column layout explicitly
+  if (resumeData?.layout === 'two-column') {
+    return <TwoColumnCompactTemplate resumeData={resumeData} />;
+  }
 
   switch (normTemplate) {
     case 'classic':

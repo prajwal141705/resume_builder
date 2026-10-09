@@ -4,9 +4,12 @@ import ResumeForm from '../components/ResumeForm';
 import ResumePreview from '../components/ResumePreview';
 import TemplateSwitcher from '../components/TemplateSwitcher';
 import LoadingSpinner from '../components/LoadingSpinner';
+import AtsAnalyzerModal from '../components/AtsAnalyzerModal';
+import AiAssistantModal from '../components/AiAssistantModal';
+import ResumeVersionModal from '../components/ResumeVersionModal';
 import { INITIAL_RESUME_STATE, RESUME_TEMPLATES } from '../utils/constants';
 import resumeService from '../services/resumeService';
-import { Sparkles, Save, RotateCcw, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Save, RotateCcw, ArrowLeft, CheckCircle2, ShieldCheck, History, Wand2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const ResumeBuilder = () => {
@@ -15,7 +18,6 @@ export const ResumeBuilder = () => {
   const resumeId = searchParams.get('id');
 
   const [resumeData, setResumeData] = useState(() => {
-    // If not editing specific ID, check for cached draft
     try {
       const cached = localStorage.getItem('resumai_builder_draft');
       if (cached && !resumeId) return JSON.parse(cached);
@@ -31,6 +33,11 @@ export const ResumeBuilder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedTime, setLastSavedTime] = useState(null);
+
+  // Modals state
+  const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
 
   // Fetch resume data if editing existing
   useEffect(() => {
@@ -57,7 +64,7 @@ export const ResumeBuilder = () => {
     loadResume();
   }, [resumeId]);
 
-  // Persist draft in local storage for safety
+  // Persist draft in local storage
   const handleDataChange = (updated) => {
     setResumeData(updated);
     try {
@@ -65,6 +72,14 @@ export const ResumeBuilder = () => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const handleCustomizationChange = (customUpdates) => {
+    const updated = {
+      ...resumeData,
+      ...customUpdates,
+    };
+    handleDataChange(updated);
   };
 
   const handleTemplateChange = (newTemplate) => {
@@ -98,7 +113,6 @@ export const ResumeBuilder = () => {
       toast.success('Resume saved successfully!', { id: toastId });
 
       if (!resumeId && saved?.id) {
-        // Update URL to reflect saved ID
         navigate(`/resume-builder?id=${saved.id}`, { replace: true });
       }
     } catch (err) {
@@ -114,6 +128,20 @@ export const ResumeBuilder = () => {
       setResumeData(INITIAL_RESUME_STATE);
       setTemplate(RESUME_TEMPLATES.MODERN);
       toast.success('Sample resume loaded.');
+    }
+  };
+
+  const handleApplyAiUpdates = (updates) => {
+    handleDataChange({
+      ...resumeData,
+      ...updates,
+    });
+  };
+
+  const handleRestoreVersion = (restoredResume) => {
+    setResumeData(restoredResume);
+    if (restoredResume.template) {
+      setTemplate(restoredResume.template);
     }
   };
 
@@ -142,17 +170,49 @@ export const ResumeBuilder = () => {
               {resumeData?.title || 'Resume Editor'}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              Edit on the left, see instant live rendering on the right.
+              Independent data structure • Live template preview • AI Assisted
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {lastSavedTime && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 font-medium">
+            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 font-medium mr-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               Saved at {lastSavedTime}
             </span>
+          )}
+
+          {/* AI Assistant Button */}
+          <button
+            type="button"
+            onClick={() => setIsAiModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition-all shadow-xs active:scale-95"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+            AI Assistant
+          </button>
+
+          {/* ATS Analyzer Button */}
+          <button
+            type="button"
+            onClick={() => setIsAtsModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-xs active:scale-95"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            ATS Analyzer
+          </button>
+
+          {/* Version History Button */}
+          {resumeId && (
+            <button
+              type="button"
+              onClick={() => setIsVersionModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all shadow-xs active:scale-95"
+            >
+              <History className="w-3.5 h-3.5 text-slate-600" />
+              Versions
+            </button>
           )}
 
           <button
@@ -186,7 +246,7 @@ export const ResumeBuilder = () => {
       {/* Split-Screen Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Form Editor (5 cols) */}
-        <div className="lg:col-span-6 xl:col-span-5 h-[calc(100vh-280px)] min-h-[600px] sticky top-20">
+        <div className="lg:col-span-6 xl:col-span-5 h-[calc(100vh-260px)] min-h-[600px] sticky top-20 overflow-y-auto">
           <ResumeForm
             resumeData={resumeData}
             onChange={handleDataChange}
@@ -194,15 +254,46 @@ export const ResumeBuilder = () => {
         </div>
 
         {/* Right Column: Live A4 Preview (7 cols) */}
-        <div className="lg:col-span-6 xl:col-span-7 h-[calc(100vh-280px)] min-h-[600px] sticky top-20">
+        <div className="lg:col-span-6 xl:col-span-7 h-[calc(100vh-260px)] min-h-[600px] sticky top-20">
           <ResumePreview
             resumeData={resumeData}
             template={template}
             onSave={handleSave}
             isSaving={isSaving}
+            onOpenAtsModal={() => setIsAtsModalOpen(true)}
+            onOpenAiModal={() => setIsAiModalOpen(true)}
+            onOpenVersionModal={resumeId ? () => setIsVersionModalOpen(true) : null}
+            onUpdateCustomization={handleCustomizationChange}
           />
         </div>
       </div>
+
+      {/* Modals */}
+      {isAtsModalOpen && (
+        <AtsAnalyzerModal
+          isOpen={isAtsModalOpen}
+          onClose={() => setIsAtsModalOpen(false)}
+          resumeData={resumeData}
+        />
+      )}
+
+      {isAiModalOpen && (
+        <AiAssistantModal
+          isOpen={isAiModalOpen}
+          onClose={() => setIsAiModalOpen(false)}
+          resumeData={resumeData}
+          onUpdateResume={handleApplyAiUpdates}
+        />
+      )}
+
+      {isVersionModalOpen && resumeId && (
+        <ResumeVersionModal
+          isOpen={isVersionModalOpen}
+          onClose={() => setIsVersionModalOpen(false)}
+          resumeId={resumeId}
+          onRestoreVersion={handleRestoreVersion}
+        />
+      )}
     </div>
   );
 };

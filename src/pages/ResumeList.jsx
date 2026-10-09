@@ -16,11 +16,13 @@ import {
   Loader2,
   Copy,
   UploadCloud,
+  ShieldCheck,
 } from 'lucide-react';
 import resumeService from '../services/resumeService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 import TemplatePreview from '../components/TemplatePreview';
+import AtsAnalyzerModal from '../components/AtsAnalyzerModal';
 import { exportToPdf } from '../utils/pdfExport';
 import toast from 'react-hot-toast';
 
@@ -35,6 +37,7 @@ export const ResumeList = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [duplicatingId, setDuplicatingId] = useState(null);
+  const [atsAnalysisResume, setAtsAnalysisResume] = useState(null);
 
   const modalPreviewRef = useRef(null);
 
@@ -129,7 +132,7 @@ export const ResumeList = () => {
             My Resumes
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage, duplicate, edit, export, and match your saved resume profiles.
+            Manage, duplicate, analyze ATS compliance, and download your resumes.
           </p>
         </div>
 
@@ -185,8 +188,8 @@ export const ResumeList = () => {
                   </div>
 
                   {/* Candidate Name & Role */}
-                  <p className="text-xs text-slate-600 font-medium mb-4">
-                    {resume.personalInfo?.fullName || 'Anonymous Candidate'} •{' '}
+                  <p className="text-xs text-slate-600 font-medium mb-3">
+                    {resume.personalInfo?.fullName || 'Candidate Profile'} •{' '}
                     <span className="text-slate-400">
                       {resume.experience?.[0]?.role || 'Software Engineer'}
                     </span>
@@ -227,7 +230,7 @@ export const ResumeList = () => {
                       title="Quick Preview"
                     >
                       <Eye className="w-3.5 h-3.5 text-slate-500" />
-                      Preview
+                      View
                     </button>
 
                     <button
@@ -252,11 +255,19 @@ export const ResumeList = () => {
 
                   <div className="flex items-center gap-2 pt-1">
                     <button
+                      onClick={() => setAtsAnalysisResume(resume)}
+                      className="flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors shadow-2xs"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      ATS Score
+                    </button>
+
+                    <button
                       onClick={() => navigate(`/job-matcher?resumeId=${resumeId}`)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 rounded-xl transition-all shadow-xs"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl transition-all shadow-xs"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      Match with Job
+                      Find Jobs
                     </button>
 
                     <button
@@ -274,9 +285,18 @@ export const ResumeList = () => {
         </div>
       )}
 
+      {/* ATS Analyzer Modal */}
+      {atsAnalysisResume && (
+        <AtsAnalyzerModal
+          isOpen={!!atsAnalysisResume}
+          onClose={() => setAtsAnalysisResume(null)}
+          resumeData={atsAnalysisResume}
+        />
+      )}
+
       {/* Quick Preview Modal */}
       {previewResume && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">

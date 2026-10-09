@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu, Sparkles, PlusCircle, UploadCloud, ShieldCheck, LayoutTemplate } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import NotificationDropdown from './NotificationDropdown';
 
 export const Navbar = ({ onOpenSidebar }) => {
   const { user, isAdmin } = useAuth();
@@ -14,7 +15,7 @@ export const Navbar = ({ onOpenSidebar }) => {
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenSidebar}
-          className="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 focus:outline-none"
+          className="lg:hidden p-2 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 focus:outline-hidden"
           aria-label="Toggle navigation"
         >
           <Menu className="w-5 h-5" />
@@ -33,7 +34,7 @@ export const Navbar = ({ onOpenSidebar }) => {
         )}
       </div>
 
-      {/* Right side: Quick actions + User profile */}
+      {/* Right side: Quick actions + Notification Dropdown + User profile */}
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
           to="/upload-resume"
@@ -45,7 +46,7 @@ export const Navbar = ({ onOpenSidebar }) => {
 
         <Link
           to="/resume-builder"
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-sm shadow-brand-500/20 active:scale-95"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-all shadow-xs shadow-brand-500/20 active:scale-95"
         >
           <PlusCircle className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">New Resume</span>
@@ -58,6 +59,9 @@ export const Navbar = ({ onOpenSidebar }) => {
           <Sparkles className="w-3.5 h-3.5 text-brand-600" />
           <span className="hidden sm:inline">AI Matcher</span>
         </Link>
+
+        {/* In-app Notification Dropdown */}
+        <NotificationDropdown />
 
         {/* User avatar indicator */}
         <Link
